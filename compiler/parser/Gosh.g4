@@ -2,11 +2,15 @@ grammar Gosh;
 
 program: statements;
 
-statements: statement+;
+statements: statement*;
 
-statement: assignment |expression| functionCall | loop  | block | functionDefinition | runStatement |returnStatement| breakStmt | continueStmt ;
+statement: assignment #ASSIGN|functionCall #FUNCCALL| expression #EXP| loop#FORLOOP|block#BLOCK
+| functionDefinition #FUNCDEF| runStatement #RUN|returnStatement#RETURN|ifStmt#IF| breakStmt#BREAK| continueStmt #CONTINUE;
 
-assignment: ID ASSIGN expression;
+assignment: lvalue ASSIGN rvalue;
+lvalue: ID (COMMA ID)*;
+rvalue: lvalue|functionCall| constvalue(COMMA rvalue)*;
+constvalue: Number|Str;
 
 functionCall: ID L_PAREN arguments? R_PAREN;
 
@@ -27,6 +31,12 @@ parameters: ID (COMMA ID)*;
 runStatement: RUN block;
 
 returnStatement: RETURN expression (COMMA expression)*;
+
+ifStmt:
+	IF (expression) block (
+		ELSE (ifStmt | block)
+	)?;
+
 // 词法规则
 COMMA                  : ',';
 ASSIGN                 :'=';
@@ -46,12 +56,17 @@ L_CURLY                : '{';
 R_CURLY                : '}';
 RUN                    : 'run';
 RETURN                 :'return';
+ELSE                   : 'else';
+IF                     : 'if';
+
+
 breakStmt              :BREAK ;
 continueStmt           :CONTINUE ;
 simpleStmt             :assignment|expression;
 forClause              :initStmt = simpleStmt? EOS expression? EOS postStmt = simpleStmt?;
 Number               : [0-9] '.'? [0-9]*;
 ID: [a-zA-Z]+;
+Str:'"'[a-zA-Z]+'"';
 //INT: [0-9]+;
 
 mulDivOP :'*' | '/' ;
