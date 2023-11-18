@@ -9,7 +9,7 @@ statement: assignment #ASSIGN|functionCall #FUNCCALL| expression #EXP| loop#FORL
 
 assignment: lvalue ASSIGN rvalue;
 lvalue: ID (COMMA ID)*;
-rvalue: lvalue|functionCall| constvalue(COMMA rvalue)*;
+rvalue: functionCall|(expression | constvalue)(COMMA rvalue)*;
 constvalue: Number|Str;
 
 functionCall: ID L_PAREN arguments? R_PAREN;
