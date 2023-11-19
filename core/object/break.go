@@ -1,5 +1,10 @@
 package object
 
+import (
+	"errors"
+	"gosh/compiler/token"
+)
+
 // Break represents a break statement.
 type Break struct{}
 
@@ -21,4 +26,8 @@ func (o *Break) IsFalsy() bool {
 // is equal to the value of another object.
 func (o *Break) Equals(x Object) bool {
 	return false
+}
+
+func (o *Break) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
+	return nil, errors.New("invalid operator")
 }

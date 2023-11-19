@@ -1,6 +1,8 @@
 package object
 
 import (
+	"errors"
+	"gosh/compiler/token"
 	"strconv"
 )
 
@@ -33,4 +35,8 @@ func (o *String) Equals(x Object) bool {
 	}
 
 	return o.Value == t.Value
+}
+
+func (o *String) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
+	return nil, errors.New("invalid operator")
 }

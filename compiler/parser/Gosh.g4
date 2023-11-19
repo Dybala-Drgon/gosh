@@ -58,7 +58,8 @@ RUN                    : 'run';
 RETURN                 :'return';
 ELSE                   : 'else';
 IF                     : 'if';
-
+ADD                    :'+';
+SUB                    :'-';
 
 breakStmt              :BREAK ;
 continueStmt           :CONTINUE ;
@@ -70,7 +71,7 @@ Str:'"'[a-zA-Z]+'"';
 //INT: [0-9]+;
 
 mulDivOP :'*' | '/' ;
-binOP : '+' | '-' | '//' | '%' | '&' | '|'
+binOP : ADD | SUB | '//' | '%' | '&' | '|'
         | '^' | '>>' | '<<' | '<=' | '>=' | '<' | '>'
         | '==' | '!=' | '&&' | '||';
 

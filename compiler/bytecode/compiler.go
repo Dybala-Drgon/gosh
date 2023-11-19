@@ -1,19 +1,24 @@
 package bytecode
 
 import (
-	"fmt"
 	"github.com/antlr4-go/antlr/v4"
+	"github.com/gookit/slog"
 	"gosh/compiler/parser"
+	"gosh/compiler/token"
+	"gosh/core/object"
 )
 
 type Bytecode struct {
-	Instructions []byte
-	//Constants    []object.Object
+	Instructions []*CompilationScope // 可能有多个指令域
+	Constants    []object.Object     // 常量也需要保存下来
+	SymbolTables []*SymbolTable
 }
 
 type GoshVisitor struct {
-	parser.BaseGoshVisitor
+	*parser.BaseGoshVisitor
 	SymbolTables   []*SymbolTable
+	Ins            []*CompilationScope // 可能有多个指令域
+	Constants      []object.Object
 	CurSymTableIdx int
 }
 
@@ -27,6 +32,7 @@ func (v *GoshVisitor) InitCompiler() {
 		globalSymbol.parent = v.SymbolTables[v.CurSymTableIdx]
 	}
 	v.SymbolTables = append(v.SymbolTables, globalSymbol)
+	v.Ins = append(v.Ins, &CompilationScope{})
 }
 
 func (v *GoshVisitor) AddSymbolTable() *SymbolTable {
@@ -48,7 +54,7 @@ func (v *GoshVisitor) visitRule(node antlr.RuleNode) interface{} {
 }
 
 func (v *GoshVisitor) VisitStatements(ctx *parser.StatementsContext) interface{} {
-	fmt.Println("visit stmt, count = ", ctx.GetChildCount())
+	slog.Trace("visit stmt, count = ", ctx.GetChildCount())
 	for _, elem := range ctx.AllStatement() {
 		return v.visitRule(elem)
 	}
@@ -56,25 +62,28 @@ func (v *GoshVisitor) VisitStatements(ctx *parser.StatementsContext) interface{}
 }
 
 func (v *GoshVisitor) VisitProgram(ctx *parser.ProgramContext) interface{} {
-	fmt.Println("visit program")
-	return v.visitRule(ctx.Statements())
+	slog.Trace("visit program")
+	v.visitRule(ctx.Statements())
+	return &Bytecode{Instructions: v.Ins,
+		Constants: v.Constants, SymbolTables: v.SymbolTables}
+}
+func (v *GoshVisitor) addConstant(o object.Object) int {
+	v.Constants = append(v.Constants, o)
+	return len(v.Constants) - 1
 }
 
-func (v *GoshVisitor) VisitASSIGN(ctx *parser.ASSIGNContext) interface{} {
-	fmt.Println("enter assign stmt", ctx.GetText(), ctx.GetChildCount())
-	//return v.visitRule(ctx.Assignment().Lvalue())
-	asg := ctx.Assignment()
-	table := v.SymbolTables[v.CurSymTableIdx]
-	for _, id := range asg.Lvalue().AllID() {
-		table.Define(id.GetText())
-	}
-
-	v.visitRule(asg.Lvalue())
-	v.visitRule(asg.Rvalue())
-	return nil
+func (v *GoshVisitor) currentInstructions() (b []byte) {
+	return v.Ins[v.CurSymTableIdx].Instruction
 }
 
-func (v *GoshVisitor) VisitLvalue(ctx *parser.LvalueContext) interface{} {
-	fmt.Println("enter lvalue =", ctx.GetText())
-	return nil
+func (v *GoshVisitor) addInstruction(b []byte) int {
+	posNewIns := len(v.currentInstructions())
+	v.Ins[v.CurSymTableIdx].Instruction = append(v.Ins[v.CurSymTableIdx].Instruction, b...)
+	return posNewIns
+}
+
+func (v *GoshVisitor) emit(opcode token.Opcode, operands ...int) int {
+	inst := MakeInstruction(opcode, operands...)
+	pos := v.addInstruction(inst)
+	return pos
 }

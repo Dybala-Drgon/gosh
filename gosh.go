@@ -2,8 +2,10 @@ package main
 
 import (
 	"github.com/antlr4-go/antlr/v4"
+	"github.com/gookit/slog"
 	"gosh/compiler/bytecode"
 	"gosh/compiler/parser"
+	"gosh/core/vm"
 )
 
 func RunGosh(input string) {
@@ -11,14 +13,25 @@ func RunGosh(input string) {
 	lexer := parser.NewGoshLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewGoshParser(stream)
-	visitor := bytecode.GoshVisitor{}
+	visitor := &bytecode.GoshVisitor{}
 	visitor.InitCompiler()
-	//visitor := parser.BaseGoshVisitor{}
-	p.Program().Accept(&visitor)
-
+	s := p.Program()
+	code := s.Accept(visitor)
+	//slog.Trace(reflect.TypeOf(code))
+	virtualMachine := vm.NewVM(code.(*bytecode.Bytecode))
+	virtualMachine.Run()
 }
+
 func main() {
-	RunGosh(`c,b,a=2.2,"str",t`)
+	slog.SetLogLevel(slog.TraceLevel)
+	slog.Configure(func(logger *slog.SugaredLogger) {
+		f := logger.Formatter.(*slog.TextFormatter)
+		f.EnableColor = true
+
+	})
+	//RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,t,8`)
+	RunGosh(`7+8*9+(8-4)*2`)
+	//RunGosh(`-8`)
 }
 
 //
@@ -35,7 +48,7 @@ func main() {
 //	// Finally parse the expression
 //	p.Start_().Accept(&visitor)
 //
-//	fmt.Println(visitor.Pop())
+//	slog.Trace(visitor.Pop())
 //}
 //
 //type CalVisitor struct {
@@ -66,12 +79,12 @@ func main() {
 //}
 //
 //func (v *CalVisitor) VisitStart(ctx *parser.StartContext) interface{} {
-//	fmt.Println("VisitStart")
+//	slog.Trace("VisitStart")
 //	return v.visitRule(ctx.Expr())
 //}
 //
 //func (v *CalVisitor) VisitNumber(ctx *parser.NumberContext) interface{} {
-//	fmt.Println("VisitNumber")
+//	slog.Trace("VisitNumber")
 //	i, err := strconv.Atoi(ctx.NUMBER().GetText())
 //	if err != nil {
 //		panic(err.Error())
@@ -82,14 +95,14 @@ func main() {
 //}
 //
 //func (v *CalVisitor) VisitMulDiv(ctx *parser.MulDivContext) interface{} {
-//	fmt.Println("VisitMulDiv")
+//	slog.Trace("VisitMulDiv")
 //	//push expression result to Stack
 //	v.visitRule(ctx.Expr(0))
 //	v.visitRule(ctx.Expr(1))
-//	fmt.Println("kids size = ", ctx.GetChildCount(), ctx.Expr(2))
+//	slog.Trace("kids size = ", ctx.GetChildCount(), ctx.Expr(2))
 //	//push result to Stack
 //	var t antlr.Token = ctx.GetOp()
-//	fmt.Println(t.GetText())
+//	slog.Trace(t.GetText())
 //	right := v.Pop()
 //	left := v.Pop()
 //	switch t.GetTokenType() {
@@ -106,7 +119,7 @@ func main() {
 //}
 //
 //func (v *CalVisitor) VisitAddSub(ctx *parser.AddSubContext) interface{} {
-//	fmt.Println("VisitAddSub======")
+//	slog.Trace("VisitAddSub======")
 //	//push expression result to Stack
 //	v.visitRule(ctx.Expr(0))
 //	v.visitRule(ctx.Expr(1))
@@ -123,7 +136,7 @@ func main() {
 //	default:
 //		panic("should not happen")
 //	}
-//	fmt.Println("VisitAddSub======exit")
+//	slog.Trace("VisitAddSub======exit")
 //	return nil
 //
 //}
