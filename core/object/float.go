@@ -1,6 +1,9 @@
 package object
 
 import (
+	"errors"
+	"gosh/compiler/token"
+
 	"math"
 	"strconv"
 )
@@ -33,4 +36,65 @@ func (o *Float) Equals(x Object) bool {
 	}
 
 	return o.Value == t.Value
+}
+
+func (o *Float) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
+	switch rhs := rhs.(type) {
+	case *Float:
+		switch op {
+		case token.OpAdd:
+			r := o.Value + rhs.Value
+			if r == o.Value {
+				return o, nil
+			}
+			return &Float{Value: r}, nil
+		case token.OpSub:
+			r := o.Value - rhs.Value
+			if r == o.Value {
+				return o, nil
+			}
+			return &Float{Value: r}, nil
+		case token.OpMul:
+			r := o.Value * rhs.Value
+			if r == o.Value {
+				return o, nil
+			}
+			return &Float{Value: r}, nil
+		case token.OpDiv:
+			r := o.Value / rhs.Value
+			if r == o.Value {
+				return o, nil
+			}
+			return &Float{Value: r}, nil
+		}
+	case *Int:
+		switch op {
+		case token.OpAdd:
+			r := o.Value + float64(rhs.Value)
+			if r == o.Value {
+				return o, nil
+			}
+			return &Float{Value: r}, nil
+		case token.OpSub:
+			r := o.Value - float64(rhs.Value)
+			if r == o.Value {
+				return o, nil
+			}
+			return &Float{Value: r}, nil
+		case token.OpMul:
+			r := o.Value * float64(rhs.Value)
+			if r == o.Value {
+				return o, nil
+			}
+			return &Float{Value: r}, nil
+		case token.OpDiv:
+			r := o.Value / float64(rhs.Value)
+			if r == o.Value {
+				return o, nil
+			}
+			return &Float{Value: r}, nil
+		}
+	}
+
+	return nil, errors.New("二元操作符类型错误")
 }

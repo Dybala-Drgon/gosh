@@ -1,8 +1,14 @@
 package object
 
+import (
+	"gosh/compiler/token"
+)
+
 type Object interface {
 	// TypeName should return the name of the type.
 	TypeName() string
+
+	BinaryOp(op token.Opcode, rhs Object) (Object, error)
 
 	// String should return a string representation of the type's value.
 	String() string

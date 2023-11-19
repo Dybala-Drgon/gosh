@@ -2,6 +2,8 @@ package object
 
 import (
 	"bytes"
+	"errors"
+	"gosh/compiler/token"
 )
 
 // Bytes represents a byte array.
@@ -32,4 +34,8 @@ func (o *Bytes) Equals(x Object) bool {
 	}
 
 	return bytes.Compare(o.Value, t.Value) == 0
+}
+
+func (o *Bytes) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
+	return nil, errors.New("invalid operator")
 }

@@ -1,5 +1,10 @@
 package object
 
+import (
+	"errors"
+	"gosh/compiler/token"
+)
+
 // ReturnValue represents a value that is being returned.
 type ReturnValue struct {
 	Value []Object
@@ -23,4 +28,8 @@ func (o *ReturnValue) IsFalsy() bool {
 // is equal to the value of another object.
 func (o *ReturnValue) Equals(x Object) bool {
 	return false
+}
+
+func (o *ReturnValue) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
+	return nil, errors.New("invalid operator")
 }

@@ -1,5 +1,10 @@
 package object
 
+import (
+	"errors"
+	"gosh/compiler/token"
+)
+
 // Function represents a user function.
 type Function struct {
 	Value CallableFunc
@@ -28,4 +33,8 @@ func (o *Function) Equals(x Object) bool {
 // Call invokes a user function.
 func (o *Function) Call(args ...Object) ([]Object, error) {
 	return o.Value(args...)
+}
+
+func (o *Function) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
+	return nil, errors.New("invalid operator")
 }

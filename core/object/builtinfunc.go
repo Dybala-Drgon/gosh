@@ -1,13 +1,13 @@
 package object
 
-import "fmt"
+import "github.com/gookit/slog"
 
 func show(args ...Object) {
 	for _, arg := range args {
 		if str, ok := arg.(*String); ok {
-			fmt.Println(str.Value)
+			slog.Trace(str.Value)
 		} else {
-			fmt.Println(arg.String())
+			slog.Trace(arg.String())
 		}
 	}
 }
