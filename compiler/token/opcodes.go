@@ -56,7 +56,8 @@ const (
 	OpIteratorKey                    // Iterator key
 	OpIteratorValue                  // Iterator value
 	OpModule                         // Module
-	OpSetVar
+	OpSetVar                         // assign value to var
+	OpGetVar                         // get value from var
 )
 
 var OpcodeOperands = [...][]int{
@@ -113,5 +114,6 @@ var OpcodeOperands = [...][]int{
 	OpIteratorKey:      {},
 	OpIteratorValue:    {},
 	OpModule:           {2},
-	OpSetVar:           {2,2},
+	OpSetVar:           {2, 2},
+	OpGetVar:           {2, 2},
 }

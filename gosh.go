@@ -43,8 +43,11 @@ func main() {
 		f.EnableColor = true
 
 	})
-	//RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,t,-8`)
-	RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,8-(5+1),-8`)
+	RunGosh(`
+t4=999
+c,b,a,t,w2=2.2,"str",1+2*5,t4,-8
+`)
+	//RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,8-(5+1),-8`)
 	//RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,-8,fun()fun`)
 	//RunGosh(`7+8*9+(8-4)*2`)
 	//RunGosh(`-8`)

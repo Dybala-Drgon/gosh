@@ -27,7 +27,6 @@ func (v *GoshVisitor) VisitASSIGN(ctx *parser.ASSIGNContext) interface{} {
 		slog.Error("assign 左右参数不匹配, left size ", lSize, " right size ", rSize)
 		panic("assign 左右参数不匹配")
 	}
-	// TODO: 左值处理
 	// 符号表id、在该符号表下的idx
 	for i := len(idt) - 1; i >= 0; i-- {
 		v.emit(token.OpSetVar, v.CurSymTableIdx, v.SymbolTables[v.CurSymTableIdx].store[idt[i]])

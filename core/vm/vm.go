@@ -107,6 +107,13 @@ func (v *VM) Run() error {
 			v.ip += 4
 			sb.Value = v.stack[v.sp-1]
 			v.sp--
+		case token.OpGetVar:
+			symtableidx := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
+			idx := int(v.instructions[v.curSymIdx].Instruction[v.ip+4]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+3])<<8
+			sb := v.SymbolTables[symtableidx].GetSymbol(idx)
+			v.ip += 4
+			v.stack[v.sp] = sb.Value
+			v.sp++
 		}
 		v.ip++
 	}

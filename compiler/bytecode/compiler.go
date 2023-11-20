@@ -48,7 +48,7 @@ func (v *GoshVisitor) visitRule(node antlr.RuleNode) interface{} {
 func (v *GoshVisitor) VisitStatements(ctx *parser.StatementsContext) interface{} {
 	slog.Trace("visit stmt, count = ", ctx.GetChildCount())
 	for _, elem := range ctx.AllStatement() {
-		return v.visitRule(elem)
+		v.visitRule(elem)
 	}
 	return nil
 }

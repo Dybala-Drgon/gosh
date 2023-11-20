@@ -1,6 +1,7 @@
 package bytecode
 
 import (
+	"fmt"
 	"github.com/antlr4-go/antlr/v4"
 	"github.com/gookit/slog"
 	"gosh/compiler/parser"
@@ -76,8 +77,23 @@ func (v *GoshVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{}
 				// 常量操作符、所在常量表的下标
 				v.emit(token.OpConstant, res)
 			case parser.GoshParserID:
-				slog.Trace("解析:ID")
-				// TODO: 解析该id
+				slog.Trace("解析:ID", t.GetText())
+				// emit OpGetVar、所在符号表id、在该符号表下的idx
+				curentTable := v.SymbolTables[v.CurSymTableIdx]
+				for curentTable != nil {
+					if elem, ok := curentTable.store[t.GetText()]; ok {
+						// 如果找到了相关元素
+						v.emit(token.OpGetVar, curentTable.idx, elem)
+						break
+					} else {
+						curentTable = curentTable.parent
+					}
+				}
+				if curentTable == nil {
+					str := fmt.Sprintf("can not find symbol: %s", t.GetText())
+					slog.Error(str)
+					panic(str)
+				}
 			case parser.GoshParserL_PAREN:
 				continue
 			case parser.GoshParserR_PAREN:
