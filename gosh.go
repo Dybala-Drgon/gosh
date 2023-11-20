@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/antlr4-go/antlr/v4"
 	"github.com/gookit/slog"
 	"gosh/compiler/bytecode"
@@ -8,14 +9,27 @@ import (
 	"gosh/core/vm"
 )
 
+type goshErrorListener struct {
+	*antlr.DefaultErrorListener
+}
+
+func (e *goshErrorListener) SyntaxError(recognizer antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, ex antlr.RecognitionException) {
+	str := fmt.Sprintf("SyntaxError %d:%d  [%s]\n", line, column, msg)
+	slog.Error(str)
+	panic(str)
+}
+
 func RunGosh(input string) {
 	is := antlr.NewInputStream(input)
 	lexer := parser.NewGoshLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewGoshParser(stream)
+	p.AddErrorListener(&goshErrorListener{})
 	visitor := &bytecode.GoshVisitor{}
 	visitor.InitCompiler()
 	s := p.Program()
+
+	//slog.Info(s.GetText())
 	code := s.Accept(visitor)
 	//slog.Trace(reflect.TypeOf(code))
 	virtualMachine := vm.NewVM(code.(*bytecode.Bytecode))
@@ -30,7 +44,8 @@ func main() {
 
 	})
 	//RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,t,-8`)
-	RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,-8,fun()`)
+	RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,8-(5+1),-8`)
+	//RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,-8,fun()fun`)
 	//RunGosh(`7+8*9+(8-4)*2`)
 	//RunGosh(`-8`)
 }

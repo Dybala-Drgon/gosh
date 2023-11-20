@@ -66,7 +66,7 @@ continueStmt           :CONTINUE ;
 simpleStmt             :assignment|expression;
 forClause              :initStmt = simpleStmt? EOS expression? EOS postStmt = simpleStmt?;
 Number               : [0-9] '.'? [0-9]*;
-ID: [a-zA-Z]+;
+ID: [a-zA-Z]+('_'|Number)*;
 Str:'"'[a-zA-Z]+'"';
 //INT: [0-9]+;
 

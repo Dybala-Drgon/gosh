@@ -43,7 +43,7 @@ func (v *GoshVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{}
 				case parser.GoshParserSUB:
 					tmp := kids[i+1]
 					if tmp2, ok := tmp.(*parser.ExpressionContext); ok {
-						slog.Debug("递归exp")
+						slog.Trace("递归exp")
 						tmp2.Accept(v)
 						i++
 						v.emit(token.OpSub)

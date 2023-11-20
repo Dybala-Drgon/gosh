@@ -4,15 +4,18 @@ import (
 	"github.com/antlr4-go/antlr/v4"
 	"github.com/gookit/slog"
 	"gosh/compiler/parser"
+	"gosh/compiler/token"
 	"reflect"
 )
 
 func (v *GoshVisitor) VisitASSIGN(ctx *parser.ASSIGNContext) interface{} {
 	slog.Trace("enter assign stmt", ctx.GetText())
 	asg := ctx.Assignment()
+	var idt []string
 	for _, id := range asg.Lvalue().AllID() {
 		v.SymbolTables[v.CurSymTableIdx].Define(id.GetText())
 		//slog.Trace(id.GetText())
+		idt = append(idt, id.GetText())
 	}
 	lSize := len(asg.Lvalue().AllID())
 	resTmp := v.visitRule(asg.Rvalue())
@@ -22,10 +25,13 @@ func (v *GoshVisitor) VisitASSIGN(ctx *parser.ASSIGNContext) interface{} {
 	}
 	if lSize != rSize {
 		slog.Error("assign 左右参数不匹配, left size ", lSize, " right size ", rSize)
+		panic("assign 左右参数不匹配")
 	}
 	// TODO: 左值处理
 	// 符号表id、在该符号表下的idx
-
+	for i := len(idt) - 1; i >= 0; i-- {
+		v.emit(token.OpSetVar, v.CurSymTableIdx, v.SymbolTables[v.CurSymTableIdx].store[idt[i]])
+	}
 	return nil
 }
 

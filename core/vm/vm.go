@@ -32,12 +32,12 @@ func NewVM(bytecode *bytecode.Bytecode) *VM {
 func (v *VM) Run() error {
 	slog.Trace("run vm")
 	slog.Trace("域总量:", len(v.instructions))
-	slog.Trace(v.instructions[0].Instruction)
-	for v.ip < len(v.instructions[0].Instruction) {
-		switch token.Opcode(v.instructions[0].Instruction[v.ip]) {
+	//slog.Trace(v.instructions[0].Instruction)
+	for v.ip < len(v.instructions[v.curSymIdx].Instruction) {
+		switch token.Opcode(v.instructions[v.curSymIdx].Instruction[v.ip]) {
 		case token.OpConstant:
 			// 把常量压进去
-			cidx := int(v.instructions[0].Instruction[v.ip+2]) | int(v.instructions[0].Instruction[v.ip+1])<<8
+			cidx := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
 			v.ip += 2
 			v.stack[v.sp] = &v.constants[cidx]
 			v.sp++
@@ -100,13 +100,23 @@ func (v *VM) Run() error {
 
 			v.stack[v.sp] = &res
 			v.sp++
+		case token.OpSetVar:
+			symtableidx := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
+			idx := int(v.instructions[v.curSymIdx].Instruction[v.ip+4]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+3])<<8
+			sb := v.SymbolTables[symtableidx].GetSymbol(idx)
+			v.ip += 4
+			sb.Value = v.stack[v.sp-1]
+			v.sp--
 		}
-
 		v.ip++
-
 	}
+	for _, elem := range v.SymbolTables[0].GetAllSymbol() {
+		slog.Debug(elem.Name, *elem.Value)
+	}
+
 	for i := 0; i < v.sp; i++ {
 		slog.Info(*v.stack[i])
 	}
+
 	return nil
 }

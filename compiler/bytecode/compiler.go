@@ -24,14 +24,7 @@ type GoshVisitor struct {
 
 // InitCompiler 初始化编译器
 func (v *GoshVisitor) InitCompiler() {
-	globalSymbol := NewSymbolTable()
-	if len(v.SymbolTables) == 0 {
-		globalSymbol.parent = nil
-		v.CurSymTableIdx = 0
-	} else {
-		globalSymbol.parent = v.SymbolTables[v.CurSymTableIdx]
-	}
-	v.SymbolTables = append(v.SymbolTables, globalSymbol)
+	v.AddSymbolTable()
 	v.Ins = append(v.Ins, &CompilationScope{})
 }
 
