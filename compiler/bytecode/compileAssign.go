@@ -10,12 +10,22 @@ import (
 func (v *GoshVisitor) VisitASSIGN(ctx *parser.ASSIGNContext) interface{} {
 	slog.Trace("enter assign stmt", ctx.GetText())
 	asg := ctx.Assignment()
-	table := v.SymbolTables[v.CurSymTableIdx]
 	for _, id := range asg.Lvalue().AllID() {
-		table.Define(id.GetText())
+		v.SymbolTables[v.CurSymTableIdx].Define(id.GetText())
 		//slog.Trace(id.GetText())
 	}
-	v.visitRule(asg.Rvalue())
+	lSize := len(asg.Lvalue().AllID())
+	resTmp := v.visitRule(asg.Rvalue())
+	rSize, ok := resTmp.(int)
+	if !ok {
+		slog.Error("visit Rvalue return error type")
+	}
+	if lSize != rSize {
+		slog.Error("assign 左右参数不匹配, left size ", lSize, " right size ", rSize)
+	}
+	// TODO: 左值处理
+	// 符号表id、在该符号表下的idx
+
 	return nil
 }
 
@@ -26,24 +36,34 @@ func (v *GoshVisitor) VisitLvalue(ctx *parser.LvalueContext) interface{} {
 
 func (v *GoshVisitor) VisitRvalue(ctx *parser.RvalueContext) interface{} {
 	slog.Trace("rvalue = ", ctx.GetText())
-
+	var resSize int
+	resSize = 0
 	for _, elem := range ctx.GetChildren() {
+		var tmpReturn interface{}
 		switch t := elem.(type) {
 		case *parser.ConstvalueContext:
 			t.Accept(v)
+			resSize++
 		case *parser.ExpressionContext:
 			t.Accept(v)
+			resSize++
 		case *antlr.TerminalNodeImpl:
 			if t.GetText() != "," {
 				slog.Error("符号错误")
 			}
 			continue
 		case *parser.RvalueContext:
-			t.Accept(v)
+			tmpReturn = t.Accept(v)
+		case *parser.FunctionCallContext:
+			// TODO: func调用
+			//tmpReturn = t.Accept(v)
 		default:
 			slog.Trace("type:", t)
 			slog.Trace("type:", reflect.TypeOf(elem))
 		}
+		if length, ok := tmpReturn.(int); ok {
+			resSize += length
+		}
 	}
-	return nil
+	return resSize
 }

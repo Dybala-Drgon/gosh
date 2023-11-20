@@ -31,7 +31,7 @@ func NewVM(bytecode *bytecode.Bytecode) *VM {
 
 func (v *VM) Run() error {
 	slog.Trace("run vm")
-	slog.Trace("域:", len(v.instructions))
+	slog.Trace("域总量:", len(v.instructions))
 	slog.Trace(v.instructions[0].Instruction)
 	for v.ip < len(v.instructions[0].Instruction) {
 		switch token.Opcode(v.instructions[0].Instruction[v.ip]) {
@@ -105,7 +105,7 @@ func (v *VM) Run() error {
 		v.ip++
 
 	}
-	for i := 0; i < 10; i++ {
+	for i := 0; i < v.sp; i++ {
 		slog.Info(*v.stack[i])
 	}
 	return nil

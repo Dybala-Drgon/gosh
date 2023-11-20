@@ -33,7 +33,7 @@ func (v *GoshVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{}
 				case parser.GoshParserADD:
 					tmp := kids[i+1]
 					if tmp2, ok := tmp.(*parser.ExpressionContext); ok {
-						slog.Debug("递归exp")
+						slog.Trace("递归exp")
 						tmp2.Accept(v)
 						i++
 						v.emit(token.OpAdd)
@@ -77,6 +77,7 @@ func (v *GoshVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{}
 				v.emit(token.OpConstant, res)
 			case parser.GoshParserID:
 				slog.Trace("解析:ID")
+				// TODO: 解析该id
 			case parser.GoshParserL_PAREN:
 				continue
 			case parser.GoshParserR_PAREN:
@@ -87,7 +88,7 @@ func (v *GoshVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{}
 		case *parser.MulDivOPContext:
 			tmp := kids[i+1]
 			if tmp2, ok := tmp.(*parser.ExpressionContext); ok {
-				slog.Debug("递归exp")
+				slog.Trace("递归exp")
 				tmp2.Accept(v)
 				i++
 			} else {

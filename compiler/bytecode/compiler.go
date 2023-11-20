@@ -49,8 +49,7 @@ func (v *GoshVisitor) AddSymbolTable() *SymbolTable {
 }
 
 func (v *GoshVisitor) visitRule(node antlr.RuleNode) interface{} {
-	node.Accept(v)
-	return nil
+	return node.Accept(v)
 }
 
 func (v *GoshVisitor) VisitStatements(ctx *parser.StatementsContext) interface{} {
