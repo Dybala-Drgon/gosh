@@ -54,7 +54,8 @@ func main() {
 	RunGosh(`t=3
 	if t==2{
 		t = t+1
-	}else if t==3{
+	}
+else if t==3{
 		t= t-1
 	}else{
 	t=10		

@@ -22,5 +22,5 @@ func (v *GoshVisitor) VisitBlock(ctx *parser.BlockContext) interface{} {
 	v.visitRule(ctx.Statements())
 	v.CurSymTableIdx = origin
 	v.emit(token.OpExitSymTable)
-	return nil
+	return newSymbol.idx
 }

@@ -95,7 +95,6 @@ func (v *VM) Run() error {
 			}
 			v.stack[v.sp] = &res
 			v.sp++
-			// TODO: add support
 		case token.OpLess:
 			right := v.stack[v.sp-1]
 			left := v.stack[v.sp-2]

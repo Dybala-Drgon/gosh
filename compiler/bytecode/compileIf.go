@@ -25,7 +25,25 @@ func (v *GoshVisitor) VisitIfStmt(ctx *parser.IfStmtContext) interface{} {
 	// 第符号表idx
 
 	//jumpPos1 := v.emit(token.OpJumpFalsy, 0)
-	v.visitRule(ctx.Block(0))
-
+	// blk有且仅有一个
+	var res int
+	restmp := v.visitRule(ctx.Block(0))
+	res = restmp.(int)
+	slog.Info("res = ", res)
+	if ctx.ELSE() == nil {
+		return res
+	}
+	count := ctx.GetChildCount()
+	// 获取最后一个子节点
+	kid := ctx.GetChild(count - 1)
+	//slog.Info(reflect.TypeOf(kid))
+	switch t := kid.(type) {
+	case *parser.IfStmtContext:
+		v.visitRule(t)
+	case *parser.BlockContext:
+		v.visitRule(t)
+	default:
+		slog.Info("暂未实现")
+	}
 	return nil
 }

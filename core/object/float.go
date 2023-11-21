@@ -66,7 +66,6 @@ func (o *Float) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
 				return o, nil
 			}
 			return &Float{Value: r}, nil
-			// TODO:
 		case token.OpLess:
 			lhs := o.Value
 			rhs := rhs.Value
@@ -144,7 +143,7 @@ func (o *Float) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
 				return o, nil
 			}
 			return &Float{Value: r}, nil
-			// TODO:
+
 		case token.OpLess:
 			lhs := o.Value
 			rhs := float64(rhs.Value)

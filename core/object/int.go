@@ -66,7 +66,6 @@ func (o *Int) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
 				return o, nil
 			}
 			return &Int{Value: r}, nil
-			// TODO:
 		case token.OpLess:
 			lhs := o.Value
 			rhs := rhs.Value
@@ -129,7 +128,6 @@ func (o *Int) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
 			return &Float{float64(o.Value) * rhs.Value}, nil
 		case token.OpDiv:
 			return &Float{float64(o.Value) / rhs.Value}, nil
-			// TODO:
 		case token.OpLess:
 			lhs := float64(o.Value)
 			rhs := rhs.Value
