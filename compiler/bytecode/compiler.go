@@ -25,7 +25,6 @@ type GoshVisitor struct {
 // InitCompiler 初始化编译器
 func (v *GoshVisitor) InitCompiler() {
 	v.AddSymbolTable()
-	v.Ins = append(v.Ins, &CompilationScope{})
 }
 
 func (v *GoshVisitor) AddSymbolTable() *SymbolTable {
@@ -38,8 +37,25 @@ func (v *GoshVisitor) AddSymbolTable() *SymbolTable {
 	}
 	newSymbolTable.idx = len(v.SymbolTables)
 	v.SymbolTables = append(v.SymbolTables, newSymbolTable)
+	v.Ins = append(v.Ins, &CompilationScope{})
 	return newSymbolTable
 }
+
+//func (v *GoshVisitor) ForkSymbolTable() *SymbolTable {
+//	newSymbolTable := NewSymbolTable()
+//	if len(v.SymbolTables) == 0 {
+//		newSymbolTable.parent = nil
+//		v.CurSymTableIdx = 0
+//	} else {
+//		newSymbolTable.parent = v.SymbolTables[v.CurSymTableIdx]
+//	}
+//	newSymbolTable.idx = len(v.SymbolTables)
+//	v.SymbolTables = append(v.SymbolTables, newSymbolTable)
+//	v.Ins = append(v.Ins, &CompilationScope{})
+//	return newSymbolTable
+//}
+
+
 
 func (v *GoshVisitor) visitRule(node antlr.RuleNode) interface{} {
 	return node.Accept(v)

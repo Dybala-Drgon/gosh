@@ -29,9 +29,16 @@ func NewVM(bytecode *bytecode.Bytecode) *VM {
 	}
 }
 
+type ipsp struct {
+	ip int
+	sp int
+}
+
 func (v *VM) Run() error {
 	slog.Trace("run vm")
 	slog.Trace("域总量:", len(v.instructions))
+	var stack []ipsp
+
 	//slog.Trace(v.instructions[0].Instruction)
 	for v.ip < len(v.instructions[v.curSymIdx].Instruction) {
 		switch token.Opcode(v.instructions[v.curSymIdx].Instruction[v.ip]) {
@@ -180,6 +187,22 @@ func (v *VM) Run() error {
 			v.ip += 4
 			v.stack[v.sp] = sb.Value
 			v.sp++
+			//TODO: check this
+		case token.OpJumpSymTable:
+			symtableidx := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
+			v.ip += 2
+			tmp := ipsp{
+				ip: v.ip,
+				sp: v.sp,
+			}
+			stack = append(stack, tmp)
+			v.curSymIdx = symtableidx
+			v.ip = -1
+		case token.OpExitSymTable:
+			tmp := stack[0]
+			stack = stack[1:]
+			v.ip = tmp.ip
+			v.sp = tmp.sp
 		default:
 			slog.Error("尚未支持的符号", token.Opcode(v.instructions[v.curSymIdx].Instruction[v.ip]))
 		}

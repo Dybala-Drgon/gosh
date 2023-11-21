@@ -1,6 +1,8 @@
 package bytecode
 
-import "gosh/core/object"
+import (
+	"gosh/core/object"
+)
 
 type SymbolTable struct {
 	parent  *SymbolTable
@@ -21,8 +23,19 @@ type Symbol struct {
 	Value *object.Object
 }
 
-func (s *SymbolTable) Define(name string) {
-	_, ok := s.store[name]
+// Define 返回该符号表idx
+func (s *SymbolTable) Define(name string) int {
+	tmp := s
+	ok := false
+	for tmp != nil {
+		_, ok = tmp.store[name]
+		if ok {
+			return tmp.idx
+		}
+		tmp = tmp.parent
+	}
+
+	_, ok = s.store[name]
 	if !ok {
 		// 如果不存在相应的符号
 		res := &Symbol{
@@ -32,11 +45,15 @@ func (s *SymbolTable) Define(name string) {
 		}
 		s.store[name] = res.Index
 		s.symbols = append(s.symbols, res)
+		return s.idx
 	}
+	return 0
 }
+
 func (s *SymbolTable) GetSymbol(idx int) *Symbol {
 	return s.symbols[idx]
 }
+
 func (s *SymbolTable) GetAllSymbol() []*Symbol {
 	return s.symbols
 }

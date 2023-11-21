@@ -12,8 +12,10 @@ func (v *GoshVisitor) VisitASSIGN(ctx *parser.ASSIGNContext) interface{} {
 	slog.Trace("enter assign stmt", ctx.GetText())
 	asg := ctx.Assignment()
 	var idt []string
+	var symtableidx []int
 	for _, id := range asg.Lvalue().AllID() {
-		v.SymbolTables[v.CurSymTableIdx].Define(id.GetText())
+		res := v.SymbolTables[v.CurSymTableIdx].Define(id.GetText())
+		symtableidx = append(symtableidx, res)
 		//slog.Trace(id.GetText())
 		idt = append(idt, id.GetText())
 	}
@@ -29,7 +31,7 @@ func (v *GoshVisitor) VisitASSIGN(ctx *parser.ASSIGNContext) interface{} {
 	}
 	// 符号表id、在该符号表下的idx
 	for i := len(idt) - 1; i >= 0; i-- {
-		v.emit(token.OpSetVar, v.CurSymTableIdx, v.SymbolTables[v.CurSymTableIdx].store[idt[i]])
+		v.emit(token.OpSetVar, symtableidx[i], v.SymbolTables[symtableidx[i]].store[idt[i]])
 	}
 	return nil
 }
