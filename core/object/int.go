@@ -2,6 +2,7 @@ package object
 
 import (
 	"errors"
+	"github.com/gookit/slog"
 	"gosh/compiler/token"
 
 	"strconv"
@@ -65,6 +66,57 @@ func (o *Int) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
 				return o, nil
 			}
 			return &Int{Value: r}, nil
+			// TODO:
+		case token.OpLess:
+			lhs := o.Value
+			rhs := rhs.Value
+			if lhs < rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OpLessEqual:
+			lhs := o.Value
+			rhs := rhs.Value
+			if lhs <= rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OPGreater:
+			lhs := o.Value
+			rhs := rhs.Value
+			if lhs > rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OPGreaterEqual:
+			lhs := o.Value
+			rhs := rhs.Value
+			if lhs >= rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OpEqual:
+			lhs := o.Value
+			rhs := rhs.Value
+			if lhs == rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OpNotEqual:
+			lhs := o.Value
+			rhs := rhs.Value
+			if lhs != rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		default:
+			slog.Debug("尚未支持")
 
 		}
 	case *Float:
@@ -77,6 +129,58 @@ func (o *Int) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
 			return &Float{float64(o.Value) * rhs.Value}, nil
 		case token.OpDiv:
 			return &Float{float64(o.Value) / rhs.Value}, nil
+			// TODO:
+		case token.OpLess:
+			lhs := float64(o.Value)
+			rhs := rhs.Value
+			if lhs < rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OpLessEqual:
+			lhs := float64(o.Value)
+			rhs := rhs.Value
+			if lhs <= rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OPGreater:
+			lhs := float64(o.Value)
+			rhs := rhs.Value
+			if lhs > rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OPGreaterEqual:
+			lhs := float64(o.Value)
+			rhs := rhs.Value
+			if lhs >= rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OpEqual:
+			lhs := float64(o.Value)
+			rhs := rhs.Value
+			if lhs == rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OpNotEqual:
+			lhs := float64(o.Value)
+			rhs := rhs.Value
+			if lhs != rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		default:
+			slog.Debug("尚未支持")
+
 		}
 	}
 

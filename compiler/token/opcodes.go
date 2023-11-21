@@ -58,6 +58,10 @@ const (
 	OpModule                         // Module
 	OpSetVar                         // assign value to var
 	OpGetVar                         // get value from var
+	OpLess
+	OpLessEqual
+	OPGreater
+	OPGreaterEqual
 )
 
 var OpcodeOperands = [...][]int{
@@ -116,4 +120,8 @@ var OpcodeOperands = [...][]int{
 	OpModule:           {2},
 	OpSetVar:           {2, 2},
 	OpGetVar:           {2, 2},
+	OpLessEqual:        {},
+	OpLess:             {},
+	OPGreaterEqual:     {},
+	OPGreater:          {},
 }

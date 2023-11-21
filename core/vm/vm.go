@@ -74,7 +74,6 @@ func (v *VM) Run() error {
 			if err != nil {
 				return err
 			}
-
 			v.stack[v.sp] = &res
 			v.sp++
 
@@ -84,6 +83,73 @@ func (v *VM) Run() error {
 			v.sp -= 2
 
 			res, err := (*left).BinaryOp(token.OpDiv, *right)
+			if err != nil {
+				return err
+			}
+			v.stack[v.sp] = &res
+			v.sp++
+			// TODO: add support
+		case token.OpLess:
+			right := v.stack[v.sp-1]
+			left := v.stack[v.sp-2]
+			v.sp -= 2
+
+			res, err := (*left).BinaryOp(token.OpLess, *right)
+			if err != nil {
+				return err
+			}
+			v.stack[v.sp] = &res
+			v.sp++
+		case token.OpLessEqual:
+			right := v.stack[v.sp-1]
+			left := v.stack[v.sp-2]
+			v.sp -= 2
+
+			res, err := (*left).BinaryOp(token.OpLessEqual, *right)
+			if err != nil {
+				return err
+			}
+			v.stack[v.sp] = &res
+			v.sp++
+		case token.OPGreater:
+			right := v.stack[v.sp-1]
+			left := v.stack[v.sp-2]
+			v.sp -= 2
+
+			res, err := (*left).BinaryOp(token.OPGreater, *right)
+			if err != nil {
+				return err
+			}
+			v.stack[v.sp] = &res
+			v.sp++
+		case token.OPGreaterEqual:
+			right := v.stack[v.sp-1]
+			left := v.stack[v.sp-2]
+			v.sp -= 2
+
+			res, err := (*left).BinaryOp(token.OPGreaterEqual, *right)
+			if err != nil {
+				return err
+			}
+			v.stack[v.sp] = &res
+			v.sp++
+		case token.OpEqual:
+			right := v.stack[v.sp-1]
+			left := v.stack[v.sp-2]
+			v.sp -= 2
+
+			res, err := (*left).BinaryOp(token.OpEqual, *right)
+			if err != nil {
+				return err
+			}
+			v.stack[v.sp] = &res
+			v.sp++
+		case token.OpNotEqual:
+			right := v.stack[v.sp-1]
+			left := v.stack[v.sp-2]
+			v.sp -= 2
+
+			res, err := (*left).BinaryOp(token.OpNotEqual, *right)
 			if err != nil {
 				return err
 			}
@@ -114,6 +180,8 @@ func (v *VM) Run() error {
 			v.ip += 4
 			v.stack[v.sp] = sb.Value
 			v.sp++
+		default:
+			slog.Error("尚未支持的符号", token.Opcode(v.instructions[v.curSymIdx].Instruction[v.ip]))
 		}
 		v.ip++
 	}

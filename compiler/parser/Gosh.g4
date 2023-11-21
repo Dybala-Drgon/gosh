@@ -60,6 +60,14 @@ ELSE                   : 'else';
 IF                     : 'if';
 ADD                    :'+';
 SUB                    :'-';
+EQUAL                  :'==';
+NOTEQUAL               :'!=';
+AND                    :'&&';
+OR                     :'||';
+LESS                   :'<';
+LESS_EQUAL             :'<=';
+GREATER                :'>';
+GREATER_EQUAL          :'>=';
 
 breakStmt              :BREAK ;
 continueStmt           :CONTINUE ;
@@ -68,11 +76,10 @@ forClause              :initStmt = simpleStmt? EOS expression? EOS postStmt = si
 Number               : [0-9] '.'? [0-9]*;
 ID: [a-zA-Z]+('_'|Number)*;
 Str:'"'[a-zA-Z]+'"';
-//INT: [0-9]+;
 
 mulDivOP :'*' | '/' ;
 binOP : ADD | SUB | '//' | '%' | '&' | '|'
-        | '^' | '>>' | '<<' | '<=' | '>=' | '<' | '>'
-        | '==' | '!=' | '&&' | '||';
+        | '^' | '>>' | '<<' | LESS_EQUAL | GREATER_EQUAL | LESS | GREATER
+        | EQUAL | NOTEQUAL | AND | OR;
 
 unOP : '~' | '!' | '-' | '--' | '++';

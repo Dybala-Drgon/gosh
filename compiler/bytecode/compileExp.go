@@ -30,28 +30,39 @@ func (v *GoshVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{}
 			}
 			kid := t.GetChild(0)
 			if kidt, ok := kid.(*antlr.TerminalNodeImpl); ok {
+				tmp := kids[i+1]
+				if tmp2, ok := tmp.(*parser.ExpressionContext); ok {
+					slog.Trace("递归exp")
+					tmp2.Accept(v)
+					i++
+				} else {
+					slog.Error("转型失败")
+				}
 				switch kidt.GetSymbol().GetTokenType() {
 				case parser.GoshParserADD:
-					tmp := kids[i+1]
-					if tmp2, ok := tmp.(*parser.ExpressionContext); ok {
-						slog.Trace("递归exp")
-						tmp2.Accept(v)
-						i++
-						v.emit(token.OpAdd)
-					} else {
-						slog.Error("转型失败")
-					}
-				case parser.GoshParserSUB:
-					tmp := kids[i+1]
-					if tmp2, ok := tmp.(*parser.ExpressionContext); ok {
-						slog.Trace("递归exp")
-						tmp2.Accept(v)
-						i++
-						v.emit(token.OpSub)
-					} else {
-						slog.Error("转型失败")
-					}
+					v.emit(token.OpAdd)
 
+				case parser.GoshParserSUB:
+					v.emit(token.OpSub)
+
+				case parser.GoshParserLESS:
+					v.emit(token.OpLess)
+					slog.Trace("<")
+				case parser.GoshParserLESS_EQUAL:
+					v.emit(token.OpLessEqual)
+					slog.Trace("<=")
+				case parser.GoshParserGREATER:
+					v.emit(token.OPGreater)
+					slog.Trace(">")
+				case parser.GoshParserGREATER_EQUAL:
+					v.emit(token.OPGreaterEqual)
+					slog.Trace(">=")
+				case parser.GoshParserEQUAL:
+					v.emit(token.OpEqual)
+					slog.Trace("==")
+				case parser.GoshParserNOTEQUAL:
+					v.emit(token.OpNotEqual)
+					slog.Trace("!=")
 				default:
 					slog.Warn("尚未支持 ", kidt.GetText())
 				}
