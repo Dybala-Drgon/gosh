@@ -28,25 +28,21 @@ func (v *GoshVisitor) VisitIfStmt(ctx *parser.IfStmtContext) interface{} {
 	// 第符号表idx
 	v.emit(token.OpIf)
 	// blk有且仅有一个
-	var res int
 	v.visitRule(ctx.Block(0))
-	if ctx.ELSE() == nil {
-		return res
-	}
-
 	pos1 := v.emit(token.OpJump, 0)
-
-	count := ctx.GetChildCount()
-	// 获取最后一个子节点
-	kid := ctx.GetChild(count - 1)
-	//slog.Info(reflect.TypeOf(kid))
-	switch t := kid.(type) {
-	case *parser.IfStmtContext:
-		v.visitRule(t)
-	case *parser.BlockContext:
-		v.visitRule(t)
-	default:
-		slog.Info("暂未实现")
+	if ctx.ELSE() != nil {
+		count := ctx.GetChildCount()
+		// 获取最后一个子节点
+		kid := ctx.GetChild(count - 1)
+		//slog.Info(reflect.TypeOf(kid))
+		switch t := kid.(type) {
+		case *parser.IfStmtContext:
+			v.visitRule(t)
+		case *parser.BlockContext:
+			v.visitRule(t)
+		default:
+			slog.Info("暂未实现")
+		}
 	}
 
 	curPos := len(v.currentInstructions())
