@@ -63,6 +63,12 @@ func (v *GoshVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{}
 				case parser.GoshParserNOTEQUAL:
 					v.emit(token.OpNotEqual)
 					slog.Trace("!=")
+				case parser.GoshParserOR:
+					v.emit(token.OpBOr)
+					slog.Trace("||")
+				case parser.GoshParserAND:
+					v.emit(token.OpBAnd)
+					slog.Trace("&&")
 				default:
 					slog.Warn("尚未支持 ", kidt.GetText())
 				}

@@ -161,6 +161,29 @@ func (v *VM) Run() error {
 			}
 			v.stack[v.sp] = &res
 			v.sp++
+			// TODO: finish this
+		case token.OpBOr:
+			right := v.stack[v.sp-1]
+			left := v.stack[v.sp-2]
+			v.sp -= 2
+
+			res, err := (*left).BinaryOp(token.OpBOr, *right)
+			if err != nil {
+				return err
+			}
+			v.stack[v.sp] = &res
+			v.sp++
+		case token.OpBAnd:
+			right := v.stack[v.sp-1]
+			left := v.stack[v.sp-2]
+			v.sp -= 2
+
+			res, err := (*left).BinaryOp(token.OpBAnd, *right)
+			if err != nil {
+				return err
+			}
+			v.stack[v.sp] = &res
+			v.sp++
 		case token.OpMinus:
 			tmp := &object.Int{Value: 0}
 			value := v.stack[v.sp-1]

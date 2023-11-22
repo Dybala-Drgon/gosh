@@ -79,7 +79,7 @@ Str:'"'[a-zA-Z]+'"';
 
 mulDivOP :'*' | '/' ;
 binOP : ADD | SUB | '//' | '%' | '&' | '|'
-        | '^' | '>>' | '<<' | LESS_EQUAL | GREATER_EQUAL | LESS | GREATER
-        | EQUAL | NOTEQUAL | AND | OR;
+        | '^' | '>>' | '<<'| AND | OR| LESS_EQUAL | GREATER_EQUAL | LESS | GREATER
+        | EQUAL | NOTEQUAL ;
 
 unOP : '~' | '!' | '-' | '--' | '++';

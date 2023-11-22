@@ -114,6 +114,22 @@ func (o *Float) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
 			} else {
 				return &Int{Value: 0}, nil
 			}
+		case token.OpBOr:
+			lhs := o.Value
+			rhs := rhs.Value
+			if lhs != 0 || rhs != 0 {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OpBAnd:
+			lhs := o.Value
+			rhs := rhs.Value
+			if lhs != 0 && rhs != 0 {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
 		default:
 			slog.Debug("尚未支持")
 		}
@@ -188,6 +204,22 @@ func (o *Float) BinaryOp(op token.Opcode, rhs Object) (Object, error) {
 			lhs := o.Value
 			rhs := float64(rhs.Value)
 			if lhs != rhs {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OpBOr:
+			lhs := o.Value
+			rhs := float64(rhs.Value)
+			if lhs != 0 || rhs != 0 {
+				return &Int{Value: 1}, nil
+			} else {
+				return &Int{Value: 0}, nil
+			}
+		case token.OpBAnd:
+			lhs := o.Value
+			rhs := float64(rhs.Value)
+			if lhs != 0 && rhs != 0 {
 				return &Int{Value: 1}, nil
 			} else {
 				return &Int{Value: 0}, nil
