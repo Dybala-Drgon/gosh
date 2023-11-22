@@ -37,7 +37,7 @@ type ipsp struct {
 func (v *VM) Run() error {
 	slog.Trace("run vm")
 	slog.Trace("域总量:", len(v.instructions))
-	var stack []ipsp
+	var Symstack []ipsp
 
 	//slog.Trace(v.instructions[0].Instruction)
 	for v.ip < len(v.instructions[v.curSymIdx].Instruction) {
@@ -194,14 +194,30 @@ func (v *VM) Run() error {
 				ip: v.ip,
 				sp: v.sp,
 			}
-			stack = append(stack, tmp)
+			Symstack = append(Symstack, tmp)
 			v.curSymIdx = symtableidx
 			v.ip = -1
 		case token.OpExitSymTable:
-			tmp := stack[0]
-			stack = stack[1:]
+			tmp := Symstack[0]
+			Symstack = Symstack[1:]
 			v.ip = tmp.ip
 			v.sp = tmp.sp
+			v.curSymIdx = v.SymbolTables[v.curSymIdx].GetParent().GetId()
+		case token.OpIf:
+			stkValue := v.stack[v.sp-1]
+			v.sp--
+			if (*stkValue).IsFalsy() {
+				v.ip += 6
+			} else {
+				// if  idx  chukou    | else 位置
+				// if jsymbol id id jmp chukouid chukouid  jsymbol id id
+				// if jsymbol id id jmp chukouid chukouid  if jsymbol id id jmp chukouid chukouid  jsymbol id id
+			}
+		case token.OpJump:
+
+			exitPos := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
+			v.ip = exitPos - 1
+
 		default:
 			slog.Error("尚未支持的符号", token.Opcode(v.instructions[v.curSymIdx].Instruction[v.ip]))
 		}

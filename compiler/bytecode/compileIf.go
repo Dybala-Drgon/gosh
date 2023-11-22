@@ -2,6 +2,9 @@ package bytecode
 
 import (
 	"github.com/gookit/slog"
+	"gosh/compiler/token"
+
+	//"go/token"
 	"gosh/compiler/parser"
 )
 
@@ -23,16 +26,16 @@ func (v *GoshVisitor) VisitIfStmt(ctx *parser.IfStmtContext) interface{} {
 	v.visitRule(ctx.Expression())
 	// 首先打一个桩
 	// 第符号表idx
-
-	//jumpPos1 := v.emit(token.OpJumpFalsy, 0)
+	v.emit(token.OpIf)
 	// blk有且仅有一个
 	var res int
-	restmp := v.visitRule(ctx.Block(0))
-	res = restmp.(int)
-	slog.Info("res = ", res)
+	v.visitRule(ctx.Block(0))
 	if ctx.ELSE() == nil {
 		return res
 	}
+
+	pos1 := v.emit(token.OpJump, 0)
+
 	count := ctx.GetChildCount()
 	// 获取最后一个子节点
 	kid := ctx.GetChild(count - 1)
@@ -45,5 +48,9 @@ func (v *GoshVisitor) VisitIfStmt(ctx *parser.IfStmtContext) interface{} {
 	default:
 		slog.Info("暂未实现")
 	}
+
+	curPos := len(v.currentInstructions())
+	v.changeOperand(pos1, curPos)
+	slog.Info("出口位置: ", curPos)
 	return nil
 }

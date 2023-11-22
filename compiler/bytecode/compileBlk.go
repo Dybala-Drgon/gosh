@@ -20,7 +20,7 @@ func (v *GoshVisitor) VisitBlock(ctx *parser.BlockContext) interface{} {
 	v.emit(token.OpJumpSymTable, newSymbol.idx)
 	v.CurSymTableIdx = newSymbol.idx
 	v.visitRule(ctx.Statements())
-	v.CurSymTableIdx = origin
 	v.emit(token.OpExitSymTable)
+	v.CurSymTableIdx = origin
 	return newSymbol.idx
 }

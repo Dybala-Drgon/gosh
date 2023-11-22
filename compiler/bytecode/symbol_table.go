@@ -11,6 +11,14 @@ type SymbolTable struct {
 	idx     int
 }
 
+func (s *SymbolTable) GetParent() *SymbolTable {
+	return s.parent
+}
+func (s *SymbolTable) GetId() int {
+	return s.idx
+}
+
+
 func NewSymbolTable() *SymbolTable {
 	return &SymbolTable{
 		store: make(map[string]int),

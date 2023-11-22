@@ -64,6 +64,7 @@ const (
 	OPGreaterEqual
 	OpJumpSymTable
 	OpExitSymTable
+	OpIf
 )
 
 var OpcodeOperands = [...][]int{
@@ -128,4 +129,5 @@ var OpcodeOperands = [...][]int{
 	OPGreater:          {},
 	OpJumpSymTable:     {2},
 	OpExitSymTable:     {},
+	OpIf:               {},
 }

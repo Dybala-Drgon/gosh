@@ -87,6 +87,7 @@ func (v *GoshVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{}
 				}
 				// 常量操作符、所在常量表的下标
 				v.emit(token.OpConstant, res)
+
 			case parser.GoshParserID:
 				slog.Trace("解析:ID", t.GetText())
 				// emit OpGetVar、所在符号表id、在该符号表下的idx

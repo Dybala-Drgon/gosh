@@ -95,3 +95,14 @@ func (v *GoshVisitor) emit(opcode token.Opcode, operands ...int) int {
 	pos := v.addInstruction(inst)
 	return pos
 }
+
+func (v *GoshVisitor) changeOperand(opPos int, operand ...int) {
+	op := token.Opcode(v.currentInstructions()[opPos])
+	inst := MakeInstruction(op, operand...)
+
+	v.replaceInstruction(opPos, inst)
+}
+
+func (v *GoshVisitor) replaceInstruction(pos int, inst []byte) {
+	copy(v.currentInstructions()[pos:], inst)
+}

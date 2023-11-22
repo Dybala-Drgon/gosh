@@ -51,15 +51,16 @@ func main() {
 	//RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,-8,fun()fun`)
 	//RunGosh(`7+8*9+(8-4)*2`)
 	//RunGosh(`-8`)
-	RunGosh(`t=3
+	RunGosh(`t=2
 	if t==2{
 		t = t+1
 	}
 else if t==3{
 		t= t-1
-	}else{
+	}  else{
 	t=10		
 }
+a = 23
 	`)
 
 	//	RunGosh(`a=2
