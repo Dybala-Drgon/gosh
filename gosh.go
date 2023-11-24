@@ -52,23 +52,37 @@ func main() {
 	//RunGosh(`7+8*9+(8-4)*2`)
 	//RunGosh(`-8`)
 	//	RunGosh(`t=3
-	//	a=2
-	//	if t<2 || t==3 {
-	//		t = t+1
-	//	a=100
+	//		a=2
+	//		if (t<2 )|| (t==4 ){
+	//			t = t+1
+	//		a=100
+	//		}
+	//	else if t==3{
+	//			t= t-1
+	//a=897
+	//		}
+	//	else{
+	//		t=10
+	//	a = 23
 	//	}
-	////else if t==3{
-	////		t= t-1
-	////	}
-	//else{
-	//	t=10
-	//a = 23
-	//}
-	//	`)
-	RunGosh(`t=3
-	a=2
-	(t<2) || (t==3)
-`)
+	//		`)
+	//	RunGosh(`t=3
+	//	a=2
+	//	(t<2) || (t==3)
+	//`)
+
+	RunGosh(`
+	b=1
+	i=0
+	c="str"
+	for ;i<10;i=i+1{
+		if i == 0 {
+			b = b+5
+		}
+	   b = b+1
+	}
+	c=b
+	`)
 
 	//	RunGosh(`a=2
 	//	b=3
@@ -80,110 +94,3 @@ func main() {
 	//a>b
 	//	`)
 }
-
-//
-//func main() {
-//	is := antlr.NewInputStream("1 +     2 * 3+1+1")
-//	// Create the Lexer
-//	lexer := parser.NewCalcLexer(is)
-//	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
-//
-//	// Create the Parser
-//	p := parser.NewCalcParser(stream)
-//
-//	visitor := CalVisitor{}
-//	// Finally parse the expression
-//	p.Start_().Accept(&visitor)
-//
-//	slog.Trace(visitor.Pop())
-//}
-//
-//type CalVisitor struct {
-//	parser.BaseCalcVisitor
-//	Stack []int
-//}
-//
-//func (l *CalVisitor) push(i int) {
-//	l.Stack = append(l.Stack, i)
-//}
-//
-//func (l *CalVisitor) Pop() int {
-//	if len(l.Stack) < 1 {
-//		panic("Stack is empty unable to Pop")
-//	}
-//	// Get the last value from the Stack.
-//	result := l.Stack[len(l.Stack)-1]
-//
-//	// Remove the last element from the Stack.
-//	l.Stack = l.Stack[:len(l.Stack)-1]
-//
-//	return result
-//}
-//
-//func (v *CalVisitor) visitRule(node antlr.RuleNode) interface{} {
-//	node.Accept(v)
-//	return nil
-//}
-//
-//func (v *CalVisitor) VisitStart(ctx *parser.StartContext) interface{} {
-//	slog.Trace("VisitStart")
-//	return v.visitRule(ctx.Expr())
-//}
-//
-//func (v *CalVisitor) VisitNumber(ctx *parser.NumberContext) interface{} {
-//	slog.Trace("VisitNumber")
-//	i, err := strconv.Atoi(ctx.NUMBER().GetText())
-//	if err != nil {
-//		panic(err.Error())
-//	}
-//
-//	v.push(i)
-//	return nil
-//}
-//
-//func (v *CalVisitor) VisitMulDiv(ctx *parser.MulDivContext) interface{} {
-//	slog.Trace("VisitMulDiv")
-//	//push expression result to Stack
-//	v.visitRule(ctx.Expr(0))
-//	v.visitRule(ctx.Expr(1))
-//	slog.Trace("kids size = ", ctx.GetChildCount(), ctx.Expr(2))
-//	//push result to Stack
-//	var t antlr.Token = ctx.GetOp()
-//	slog.Trace(t.GetText())
-//	right := v.Pop()
-//	left := v.Pop()
-//	switch t.GetTokenType() {
-//	case parser.CalcParserMUL:
-//		v.push(left * right)
-//	case parser.CalcParserDIV:
-//		v.push(left / right)
-//	default:
-//		panic("should not happen")
-//
-//	}
-//
-//	return nil
-//}
-//
-//func (v *CalVisitor) VisitAddSub(ctx *parser.AddSubContext) interface{} {
-//	slog.Trace("VisitAddSub======")
-//	//push expression result to Stack
-//	v.visitRule(ctx.Expr(0))
-//	v.visitRule(ctx.Expr(1))
-//
-//	//push result to Stack
-//	var t antlr.Token = ctx.GetOp()
-//	right := v.Pop()
-//	left := v.Pop()
-//	switch t.GetTokenType() {
-//	case parser.CalcParserADD:
-//		v.push(left + right)
-//	case parser.CalcParserSUB:
-//		v.push(left - right)
-//	default:
-//		panic("should not happen")
-//	}
-//	slog.Trace("VisitAddSub======exit")
-//	return nil
-//
-//}

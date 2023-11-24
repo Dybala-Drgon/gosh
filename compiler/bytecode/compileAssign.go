@@ -9,18 +9,22 @@ import (
 )
 
 func (v *GoshVisitor) VisitASSIGN(ctx *parser.ASSIGNContext) interface{} {
+	v.visitRule(ctx.Assignment())
+	return nil
+}
+func (v *GoshVisitor) VisitAssignment(ctx *parser.AssignmentContext) interface{} {
 	slog.Trace("enter assign stmt", ctx.GetText())
-	asg := ctx.Assignment()
+
 	var idt []string
 	var symtableidx []int
-	for _, id := range asg.Lvalue().AllID() {
+	for _, id := range ctx.Lvalue().AllID() {
 		res := v.SymbolTables[v.CurSymTableIdx].Define(id.GetText())
 		symtableidx = append(symtableidx, res)
 		//slog.Trace(id.GetText())
 		idt = append(idt, id.GetText())
 	}
-	lSize := len(asg.Lvalue().AllID())
-	resTmp := v.visitRule(asg.Rvalue())
+	lSize := len(ctx.Lvalue().AllID())
+	resTmp := v.visitRule(ctx.Rvalue())
 	rSize, ok := resTmp.(int)
 	if !ok {
 		slog.Error("visit Rvalue return error type")

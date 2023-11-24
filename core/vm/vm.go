@@ -221,8 +221,9 @@ func (v *VM) Run() error {
 			v.curSymIdx = symtableidx
 			v.ip = -1
 		case token.OpExitSymTable:
-			tmp := Symstack[0]
-			Symstack = Symstack[1:]
+			length := len(Symstack)
+			tmp := Symstack[length-1]
+			Symstack = Symstack[:length-1]
 			v.ip = tmp.ip
 			v.sp = tmp.sp
 			v.curSymIdx = v.SymbolTables[v.curSymIdx].GetParent().GetId()
@@ -240,6 +241,23 @@ func (v *VM) Run() error {
 
 			exitPos := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
 			v.ip = exitPos - 1
+		case token.OpForIfPre:
+			stkValue := v.stack[v.sp-1]
+			v.sp--
+			if (*stkValue).IsFalsy() {
+				// 如果首轮条件不符合直接跳到指令最后即可
+			} else {
+				// 进入循环
+				v.ip += 3
+			}
+		case token.OpForIfPost:
+			stkValue := v.stack[v.sp-1]
+			v.sp--
+			if (*stkValue).IsFalsy() {
+				v.ip += 3
+			} else {
+
+			}
 
 		default:
 			slog.Error("尚未支持的符号", token.Opcode(v.instructions[v.curSymIdx].Instruction[v.ip]))
