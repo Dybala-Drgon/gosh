@@ -30,8 +30,9 @@ func NewVM(bytecode *bytecode.Bytecode) *VM {
 }
 
 type ipsp struct {
-	ip int
-	sp int
+	ip     int
+	sp     int
+	symIdx int
 }
 
 func (v *VM) Run() error {
@@ -214,8 +215,9 @@ func (v *VM) Run() error {
 			symtableidx := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
 			v.ip += 2
 			tmp := ipsp{
-				ip: v.ip,
-				sp: v.sp,
+				ip:     v.ip,
+				sp:     v.sp,
+				symIdx: v.curSymIdx,
 			}
 			Symstack = append(Symstack, tmp)
 			v.curSymIdx = symtableidx
@@ -226,7 +228,8 @@ func (v *VM) Run() error {
 			Symstack = Symstack[:length-1]
 			v.ip = tmp.ip
 			v.sp = tmp.sp
-			v.curSymIdx = v.SymbolTables[v.curSymIdx].GetParent().GetId()
+			v.curSymIdx = tmp.symIdx
+			//v.curSymIdx = v.SymbolTables[v.curSymIdx].GetParent().GetId()
 		case token.OpIf:
 			stkValue := v.stack[v.sp-1]
 			v.sp--
@@ -242,6 +245,9 @@ func (v *VM) Run() error {
 			exitPos := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
 			v.ip = exitPos - 1
 		case token.OpForIfPre:
+			// forpre jmp choukouidx chukouidx jsymbol id id [post stmt] [exp] forifpost imp pos pos
+			//                                  pos
+			//
 			stkValue := v.stack[v.sp-1]
 			v.sp--
 			if (*stkValue).IsFalsy() {
