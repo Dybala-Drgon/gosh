@@ -106,7 +106,7 @@ var OpcodeOperands = [...][]int{
 	OpImmutable:        {},
 	OpIndex:            {},
 	OpSliceIndex:       {},
-	OpCall:             {1},
+	OpCall:             {2},
 	OpReturn:           {},
 	OpReturnValue:      {1},
 	OpGetLocal:         {1},
@@ -133,5 +133,5 @@ var OpcodeOperands = [...][]int{
 	OpExitSymTable:     {},
 	OpIf:               {},
 	OpForIfPre:         {},
-	OpForIfPost:         {},
+	OpForIfPost:        {},
 }

@@ -8,37 +8,40 @@ import (
 )
 
 type VM struct {
-	sp           int
-	ip           int
-	curSymIdx    int
-	constants    []object.Object
-	stack        []*object.Object
-	SymbolTables []*bytecode.SymbolTable
-	instructions []*bytecode.CompilationScope
+	sp            int
+	ip            int
+	curSymIdx     int
+	constants     []object.Object
+	stack         []*object.Object
+	SymbolTables  []*bytecode.SymbolTable
+	instructions  []*bytecode.CompilationScope
+	functiontable map[string]bytecode.FunInfo
 }
 
 func NewVM(bytecode *bytecode.Bytecode) *VM {
 	return &VM{
-		sp:           0,
-		ip:           0,
-		curSymIdx:    0,
-		constants:    bytecode.Constants,
-		SymbolTables: bytecode.SymbolTables,
-		stack:        make([]*object.Object, 2048),
-		instructions: bytecode.Instructions,
+		sp:            0,
+		ip:            0,
+		curSymIdx:     0,
+		constants:     bytecode.Constants,
+		SymbolTables:  bytecode.SymbolTables,
+		stack:         make([]*object.Object, 2048),
+		instructions:  bytecode.Instructions,
+		functiontable: bytecode.FuncTable,
 	}
 }
 
-type ipsp struct {
-	ip     int
-	sp     int
-	symIdx int
+type Frame struct {
+	ip        int
+	sp        int
+	symIdx    int
+	frameType FrameType
 }
 
 func (v *VM) Run() error {
 	slog.Trace("run vm")
 	slog.Trace("域总量:", len(v.instructions))
-	var Symstack []ipsp
+	var StackFrame []Frame
 
 	//slog.Trace(v.instructions[0].Instruction)
 	for v.ip < len(v.instructions[v.curSymIdx].Instruction) {
@@ -214,18 +217,19 @@ func (v *VM) Run() error {
 		case token.OpJumpSymTable:
 			symtableidx := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
 			v.ip += 2
-			tmp := ipsp{
-				ip:     v.ip,
-				sp:     v.sp,
-				symIdx: v.curSymIdx,
+			tmp := Frame{
+				ip:        v.ip,
+				sp:        v.sp,
+				symIdx:    v.curSymIdx,
+				frameType: Blk,
 			}
-			Symstack = append(Symstack, tmp)
+			StackFrame = append(StackFrame, tmp)
 			v.curSymIdx = symtableidx
 			v.ip = -1
 		case token.OpExitSymTable:
-			length := len(Symstack)
-			tmp := Symstack[length-1]
-			Symstack = Symstack[:length-1]
+			length := len(StackFrame)
+			tmp := StackFrame[length-1]
+			StackFrame = StackFrame[:length-1]
 			v.ip = tmp.ip
 			v.sp = tmp.sp
 			v.curSymIdx = tmp.symIdx
@@ -245,7 +249,7 @@ func (v *VM) Run() error {
 			exitPos := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
 			v.ip = exitPos - 1
 		case token.OpForIfPre:
-			// forpre jmp choukouidx chukouidx jsymbol id id [post stmt] [exp] forifpost imp pos pos
+			// forpre jmp choukouidx chukouidx jsymbol id id [post stmt] [exp] forifpost jmp pos pos
 			//                                  pos
 			//
 			stkValue := v.stack[v.sp-1]
@@ -264,7 +268,39 @@ func (v *VM) Run() error {
 			} else {
 
 			}
+		case token.OpReturn:
+			length := len(StackFrame)
+			i := length - 1
+			for ; i >= 0; i-- {
+				tmp := StackFrame[i]
+				if tmp.frameType == Func {
 
+					// 需要跳出当前stack frame
+					break
+				}
+			}
+			if i == 0 && StackFrame[i].frameType != Func {
+				panic("栈帧错误")
+			}
+
+			tmp := StackFrame[i]
+			StackFrame = StackFrame[:i]
+			v.ip = tmp.ip
+			v.curSymIdx = tmp.symIdx
+		case token.OpCall:
+			slog.Info("opcall")
+
+			symtableidx := int(v.instructions[v.curSymIdx].Instruction[v.ip+2]) | int(v.instructions[v.curSymIdx].Instruction[v.ip+1])<<8
+			v.ip += 2
+			tmp := Frame{
+				ip:        v.ip,
+				sp:        v.sp,
+				symIdx:    v.curSymIdx,
+				frameType: Func,
+			}
+			StackFrame = append(StackFrame, tmp)
+			v.curSymIdx = symtableidx
+			v.ip = -1
 		default:
 			slog.Error("尚未支持的符号", token.Opcode(v.instructions[v.curSymIdx].Instruction[v.ip]))
 		}
@@ -273,10 +309,10 @@ func (v *VM) Run() error {
 	for _, elem := range v.SymbolTables[0].GetAllSymbol() {
 		slog.Debug(elem.Name, *elem.Value)
 	}
-
+	slog.Info("sp = ", v.sp)
 	for i := 0; i < v.sp; i++ {
 		slog.Info(*v.stack[i])
 	}
-
+	slog.Info(v.functiontable)
 	return nil
 }

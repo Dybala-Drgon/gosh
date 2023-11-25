@@ -18,7 +18,6 @@ func (s *SymbolTable) GetId() int {
 	return s.idx
 }
 
-
 func NewSymbolTable() *SymbolTable {
 	return &SymbolTable{
 		store: make(map[string]int),
@@ -32,18 +31,19 @@ type Symbol struct {
 }
 
 // Define 返回该符号表idx
-func (s *SymbolTable) Define(name string) int {
-	tmp := s
-	ok := false
-	for tmp != nil {
-		_, ok = tmp.store[name]
-		if ok {
-			return tmp.idx
+func (s *SymbolTable) Define(name string, local bool) int {
+	if !local {
+		tmp := s
+		ok := false
+		for tmp != nil {
+			_, ok = tmp.store[name]
+			if ok {
+				return tmp.idx
+			}
+			tmp = tmp.parent
 		}
-		tmp = tmp.parent
 	}
-
-	_, ok = s.store[name]
+	_, ok := s.store[name]
 	if !ok {
 		// 如果不存在相应的符号
 		res := &Symbol{

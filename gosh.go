@@ -51,7 +51,7 @@ func main() {
 	//RunGosh(`c,b,a,t,w=2.2,"str",1+2*5,-8,fun()fun`)
 	//RunGosh(`7+8*9+(8-4)*2`)
 	//RunGosh(`-8`)
-	//	RunGosh(`t=3
+	//RunGosh(`t=3
 	//		a=2
 	//		if (t<2 )|| (t==4 ){
 	//			t = t+1
@@ -66,23 +66,49 @@ func main() {
 	//	a = 23
 	//	}
 	//		`)
-	//	RunGosh(`t=3
+	//RunGosh(`t=3
 	//	a=2
 	//	(t<2) || (t==3)
 	//`)
 
+	//RunGosh(`
+	//b=1
+	//i=0
+	//c="str"
+	//for ;i<10;i=i+1{
+	//	if i == 0 {
+	//		b = b+5
+	//	}
+	//  b = b+1
+	//}
+	//c=b
+	//`)
+
+	//	RunGosh(`func first(a,b,c){
+	//	   return c,b,a
+	//	}
+	//
+	//	a,b,c=first(1,2,3)
+	//`)
 	RunGosh(`
-	b=1
-	i=0
-	c="str"
-	for ;i<10;i=i+1{
-		if i == 0 {
-			b = b+5
-		}
-	   b = b+1
+func fib(a){
+	if a< 3{
+		return 1
 	}
-	c=b
-	`)
+	f1=1
+	f2=1
+	tmp=0
+	for i=2;i<a;i=i+1{
+		tmp = f1+f2
+		f1 = f2
+		f2 = tmp
+	}
+	return tmp
+}
+
+res=fib(10)
+
+`)
 
 	//	RunGosh(`a=2
 	//	b=3

@@ -18,7 +18,7 @@ func (v *GoshVisitor) VisitAssignment(ctx *parser.AssignmentContext) interface{}
 	var idt []string
 	var symtableidx []int
 	for _, id := range ctx.Lvalue().AllID() {
-		res := v.SymbolTables[v.CurSymTableIdx].Define(id.GetText())
+		res := v.SymbolTables[v.CurSymTableIdx].Define(id.GetText(), false)
 		symtableidx = append(symtableidx, res)
 		//slog.Trace(id.GetText())
 		idt = append(idt, id.GetText())
@@ -67,6 +67,13 @@ func (v *GoshVisitor) VisitRvalue(ctx *parser.RvalueContext) interface{} {
 			tmpReturn = t.Accept(v)
 		case *parser.FunctionCallContext:
 			// TODO: func调用
+			name := t.ID().GetText()
+			fn, ok := v.FuncTable[name]
+			if !ok {
+				panic("找不到func定义")
+			}
+			tmpReturn = fn.ParamNum
+			v.visitRule(t)
 			//tmpReturn = t.Accept(v)
 		default:
 			slog.Trace("type:", t)
