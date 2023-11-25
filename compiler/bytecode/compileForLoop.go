@@ -60,3 +60,12 @@ func (v *GoshVisitor) VisitLoop(ctx *parser.LoopContext) interface{} {
 func (v *GoshVisitor) VisitSimpleStmt(ctx *parser.SimpleStmtContext) interface{} {
 	return v.visitRule(ctx.Assignment())
 }
+
+func (v *GoshVisitor) VisitBREAK(ctx *parser.BREAKContext) interface{} {
+	return v.visitRule(ctx.BreakStmt())
+}
+
+func (v *GoshVisitor) VisitBreakStmt(ctx *parser.BreakStmtContext) interface{} {
+	v.emit(token.OpBreak)
+	return nil
+}

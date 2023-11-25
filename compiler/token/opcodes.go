@@ -67,6 +67,7 @@ const (
 	OpIf
 	OpForIfPre
 	OpForIfPost
+	OpBreak
 )
 
 var OpcodeOperands = [...][]int{
@@ -134,4 +135,5 @@ var OpcodeOperands = [...][]int{
 	OpIf:               {},
 	OpForIfPre:         {},
 	OpForIfPost:        {},
+	OpBreak:            {},
 }

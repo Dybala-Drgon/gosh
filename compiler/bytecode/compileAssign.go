@@ -66,7 +66,6 @@ func (v *GoshVisitor) VisitRvalue(ctx *parser.RvalueContext) interface{} {
 		case *parser.RvalueContext:
 			tmpReturn = t.Accept(v)
 		case *parser.FunctionCallContext:
-			// TODO: func调用
 			name := t.ID().GetText()
 			fn, ok := v.FuncTable[name]
 			if !ok {

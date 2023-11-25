@@ -90,25 +90,30 @@ func main() {
 	//
 	//	a,b,c=first(1,2,3)
 	//`)
-	RunGosh(`
-func fib(a){
-	if a< 3{
-		return 1
-	}
-	f1=1
-	f2=1
-	tmp=0
-	for i=2;i<a;i=i+1{
-		tmp = f1+f2
-		f1 = f2
-		f2 = tmp
-	}
-	return tmp
-}
-
-res=fib(10)
-
-`)
+	//	RunGosh(`
+	//func fib(a){
+	//	if a< 3{
+	//		return 1
+	//	}
+	//	f1=1
+	//	f2=1
+	//	tmp=0
+	//	for i=2;i<a;i=i+1{
+	//		tmp = f1+f2
+	//		f1 = f2
+	//		f2 = tmp
+	//	}
+	//	return tmp
+	//}
+	//
+	//res=fib(10)
+	//
+	//`)
+	RunGosh(`for i=0;i<10;i=i+1{
+    if i==5{
+        break
+    }
+}`)
 
 	//	RunGosh(`a=2
 	//	b=3

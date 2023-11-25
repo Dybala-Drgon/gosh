@@ -221,7 +221,7 @@ func (v *VM) Run() error {
 				ip:        v.ip,
 				sp:        v.sp,
 				symIdx:    v.curSymIdx,
-				frameType: Blk,
+				frameType: TGBlk,
 			}
 			StackFrame = append(StackFrame, tmp)
 			v.curSymIdx = symtableidx
@@ -258,8 +258,34 @@ func (v *VM) Run() error {
 				// 如果首轮条件不符合直接跳到指令最后即可
 			} else {
 				// 进入循环
+				// 加入一个战争
+				tmp := Frame{
+					ip:        v.ip,
+					sp:        v.sp,
+					symIdx:    v.curSymIdx,
+					frameType: TGFor,
+				}
+				StackFrame = append(StackFrame, tmp)
 				v.ip += 3
 			}
+		case token.OpBreak:
+			length := len(StackFrame)
+			i := length - 1
+			for ; i >= 0; i-- {
+				tmp := StackFrame[i]
+				if tmp.frameType == TGFor {
+					// 需要跳出当前stack frame
+					break
+				}
+			}
+			if i == 0 && StackFrame[i].frameType != TGFor {
+				panic("break 未找到for loop")
+			}
+
+			tmp := StackFrame[i]
+			StackFrame = StackFrame[:i]
+			v.ip = tmp.ip
+
 		case token.OpForIfPost:
 			stkValue := v.stack[v.sp-1]
 			v.sp--
@@ -273,13 +299,13 @@ func (v *VM) Run() error {
 			i := length - 1
 			for ; i >= 0; i-- {
 				tmp := StackFrame[i]
-				if tmp.frameType == Func {
+				if tmp.frameType == TGFunc {
 
 					// 需要跳出当前stack frame
 					break
 				}
 			}
-			if i == 0 && StackFrame[i].frameType != Func {
+			if i == 0 && StackFrame[i].frameType != TGFunc {
 				panic("栈帧错误")
 			}
 
@@ -296,7 +322,7 @@ func (v *VM) Run() error {
 				ip:        v.ip,
 				sp:        v.sp,
 				symIdx:    v.curSymIdx,
-				frameType: Func,
+				frameType: TGFunc,
 			}
 			StackFrame = append(StackFrame, tmp)
 			v.curSymIdx = symtableidx
