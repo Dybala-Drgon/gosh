@@ -258,7 +258,7 @@ func (v *VM) Run() error {
 				// 如果首轮条件不符合直接跳到指令最后即可
 			} else {
 				// 进入循环
-				// 加入一个战争
+				// 加入一个栈帧
 				tmp := Frame{
 					ip:        v.ip,
 					sp:        v.sp,

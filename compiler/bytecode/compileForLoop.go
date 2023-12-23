@@ -39,7 +39,7 @@ func (v *GoshVisitor) VisitLoop(ctx *parser.LoopContext) interface{} {
 	v.emit(token.OpForIfPre)
 	pos1 := v.emit(token.OpJump, 0)
 	pos := len(v.currentInstructions())
-	// 首轮校验
+
 	v.visitRule(blk)
 	if postStmt != nil {
 		v.visitRule(postStmt)

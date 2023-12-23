@@ -1,3 +1,2 @@
-compiler/parser/*.go
 compiler/parser/*.interp
 compiler/parser/*.tokens

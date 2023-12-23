@@ -26,6 +26,7 @@ func (v *GoshVisitor) VisitAssignment(ctx *parser.AssignmentContext) interface{}
 	lSize := len(ctx.Lvalue().AllID())
 	resTmp := v.visitRule(ctx.Rvalue())
 	rSize, ok := resTmp.(int)
+	slog.Debug("rsize = ", rSize)
 	if !ok {
 		slog.Error("visit Rvalue return error type")
 	}
@@ -71,7 +72,7 @@ func (v *GoshVisitor) VisitRvalue(ctx *parser.RvalueContext) interface{} {
 			if !ok {
 				panic("找不到func定义")
 			}
-			tmpReturn = fn.ParamNum
+			tmpReturn = fn.ReturnNum
 			v.visitRule(t)
 			//tmpReturn = t.Accept(v)
 		default:
